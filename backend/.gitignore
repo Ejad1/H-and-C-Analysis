@@ -1,0 +1,8 @@
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Temporary image files
+images_temp/
+
+# OCR output files (if they are generated and don't need to be versioned)
+ocr_page_*.txt
