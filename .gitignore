@@ -1,0 +1,6 @@
+# Ignore the hc env
+hc/
+
+# Ignore generated extraction JSONs (keep example)
+data/extracted/*.json
+!data/extracted/exemple.json
