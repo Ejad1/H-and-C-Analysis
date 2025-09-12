@@ -1,0 +1,5 @@
+pydantic>=1.10,<3.0
+scikit-learn>=1.4.0
+numpy>=1.26.0
+sentence-transformers>=3.0.0
+faiss-cpu; sys_platform != 'win32'
