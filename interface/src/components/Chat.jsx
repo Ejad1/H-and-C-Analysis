@@ -24,10 +24,19 @@ export default function Chat() {
     setLoading(true)
 
     try {
-      // Placeholder: call backend when available. For now simulate a response.
-      // Later we'll replace this fetch with `fetch('/api/chat', { method: 'POST', body: JSON.stringify({query: q}) })`.
-      await new Promise((r) => setTimeout(r, 600))
-      appendMessage('assistant', `Réponse simulée pour: "${q}"`)
+      // Call the Python backend endpoint we added at POST /api/chat
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q }),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        appendMessage('assistant', `Erreur serveur: ${res.status} ${text}`)
+      } else {
+        const j = await res.json()
+        appendMessage('assistant', j.reply || 'Réponse vide du serveur')
+      }
     } catch (err) {
       appendMessage('assistant', 'Erreur lors de la requête au serveur.')
     } finally {
