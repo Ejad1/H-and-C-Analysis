@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RecorderButton from './RecorderButton'
 
+// Base URL for API, set at build time via Vite env var `VITE_API_BASE`.
+const API_BASE = typeof import.meta !== 'undefined' ? (import.meta.env.VITE_API_BASE || '') : ''
+const api = (path) => `${API_BASE}${path}`
+
 export default function ChatWindow({ user, conversation, onSend, onReceive, onPendingAssistant, onStartAssistant, onUpdateAssistant }) {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -135,7 +139,7 @@ export default function ChatWindow({ user, conversation, onSend, onReceive, onPe
 
     // Call backend streaming endpoint and append tokens as they arrive
     try {
-      const res = await fetch('/api/chat/stream', {
+      const res = await fetch(api('/api/chat/stream'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: txt }),
@@ -145,14 +149,14 @@ export default function ChatWindow({ user, conversation, onSend, onReceive, onPe
         // If stream endpoint is not found, fallback to non-streaming endpoint
         if (res.status === 404) {
           try {
-            const r2 = await fetch('/api/chat', {
+                const r2 = await fetch(api('/api/chat'), {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ query: txt }),
             })
             if (r2.ok) {
               const j = await r2.json()
-              // animate fallback full reply
+              // animate fallback full reply: create assistant bubble and start paced display
               if (!streamStartedRef.current) {
                 streamStartedRef.current = true
                 if (typeof onStartAssistant === 'function') onStartAssistant()
@@ -264,7 +268,7 @@ export default function ChatWindow({ user, conversation, onSend, onReceive, onPe
       const fd = new FormData()
       fd.append('file', blob, 'recording.webm')
       // for now reuse the streaming chat endpoint with a placeholder query
-      const res = await fetch('/api/chat/stream', {
+        const res = await fetch(api('/api/chat/stream'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: '[Audio envoyé]' }),
